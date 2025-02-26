@@ -49,13 +49,20 @@ const userSchema = new mongoose.Schema(
         }
       },
     },
+    isCoordinator: {
+      type: Boolean,
+      default: false,
+    },
     about: {
       type: String,
       default: "Hey there! I am using DevTinder",
       maxlength: 140,
     },
-    skills: {
-      type: [String],
+    role: { type: String, enum: ["Student", "Alumni"], default: "Student" },
+    academicDetails: {
+      batch: { type: String },
+      branch: { type: String },
+      section: { type: String },
     },
     isVerified: {
       type: Boolean,
