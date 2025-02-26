@@ -28,17 +28,18 @@ app.use(passport.session());
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const clubRouter = require("./routes/club");
+const adminRouter = require("./routes/admin");
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", clubRouter);
+app.use("/", adminRouter);
 
 // Create HTTP Server
 const server = http.createServer(app);
 
 const socketInit = require("./socket");
 const io = socketInit(server);
-
 
 // Connect to Database and Start Server
 connectDb()

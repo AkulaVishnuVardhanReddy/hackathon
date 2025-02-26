@@ -16,6 +16,11 @@ const clubSchema = new mongoose.Schema({
       },
     },
   ],
+  imageUrl: {
+    type: String,
+    default:
+      "https://collegecliffs.com/wp-content/uploads/2020/10/college-clubs-concept-1.png",
+  },
   events: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
 });
 

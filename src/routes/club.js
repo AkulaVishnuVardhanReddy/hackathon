@@ -89,7 +89,6 @@ clubRouter.get("/clubs", studentAuth, async (req, res) => {
       .populate("coordinators", "firstName lastName")
       .populate("facultyAdvisors", "name")
       .populate("members.userId", "firstName lastName email")
-      .select("-members.status");
     res.json(clubs);
   } catch (err) {
     res.status(500).json({ error: err.message });
