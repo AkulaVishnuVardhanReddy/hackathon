@@ -9,24 +9,10 @@ const userSchema = new mongoose.Schema(
     firstName: {
       type: String,
       required: true,
-
-      validate: {
-        validator: function (v) {
-          return /^[A-Za-z]+$/.test(v);
-        },
-        message: (props) => `${props.value} should contain only alphabets.`,
-      },
     },
     lastName: {
       type: String,
       required: true,
-
-      validate: {
-        validator: function (v) {
-          return /^[A-Za-z]+$/.test(v);
-        },
-        message: (props) => `${props.value} should contain only alphabets.`,
-      },
     },
     email: {
       type: String,
