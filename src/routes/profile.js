@@ -8,7 +8,7 @@ const {
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile/view", studentAuth, async (req, res) => {
+profileRouter.get("/student/profile", studentAuth, async (req, res) => {
   try {
     const { user } = req;
     res.send(user);

@@ -25,7 +25,7 @@ const facultySchema = new mongoose.Schema({
 });
 
 facultySchema.methods.getJWT = async function () {
-  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ _id: this._id, role: "faculty" }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 };

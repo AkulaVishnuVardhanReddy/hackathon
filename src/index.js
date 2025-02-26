@@ -1,4 +1,5 @@
 const express = require("express");
+const http = require("http"); // Import HTTP module
 const app = express();
 const connectDb = require("./config/database");
 const cookieParser = require("cookie-parser");
@@ -23,20 +24,32 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Import Routes
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const clubRouter = require("./routes/club");
+
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", clubRouter);
 
+// Create HTTP Server
+const server = http.createServer(app);
+
+const socketInit = require("./socket");
+const io = socketInit(server);
+
+
+// Connect to Database and Start Server
 connectDb()
   .then(() => {
     console.log("Database connected successfully");
-    app.listen(4000, () => {
+    server.listen(4000, () => {
       console.log("Listening on port 4000");
     });
   })
   .catch((err) => {
     console.error("Error connecting to the database", err.message);
   });
+
+module.exports = { app, io };

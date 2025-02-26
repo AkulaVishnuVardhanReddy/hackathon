@@ -3,6 +3,7 @@ const { User } = require("../models/user");
 const { sendOTP } = require("../utils/mailer");
 const cookieParser = require("cookie-parser");
 const { Faculty } = require("../models/faculty");
+const jwt = require("jsonwebtoken");
 const { Admin } = require("../models/admin");
 const bcrypt = require("bcrypt");
 const {
@@ -12,7 +13,7 @@ const {
 
 const authRouter = express.Router();
 authRouter.use(cookieParser());
-
+const { userAuth, facultyAuth, adminAuth } = require("../middlewares/auth");
 const passport = require("passport");
 
 // Start Google Auth
@@ -211,5 +212,33 @@ authRouter.post("/admin/login", async (req, res) => {
 authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, { expires: new Date(Date.now()) });
   res.send("Successfully Logout");
+});
+
+authRouter.get("/me", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).send("Unauthorized");
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    let user = null;
+
+    if (payload.role === "student") {
+      user = await User.findById(payload._id).select("-password -isCoordinator -isVerified");
+    } else if (payload.role === "faculty") {
+      user = await Faculty.findById(payload._id).select("-password");
+    } else if (payload.role === "admin") {
+      user = await Admin.findById(payload._id).select("-password");
+    }
+
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.json({ user });
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
 });
 module.exports = authRouter;
