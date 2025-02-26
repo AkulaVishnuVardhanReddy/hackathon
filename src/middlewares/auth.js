@@ -1,57 +1,65 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user");
 const { Faculty } = require("../models/faculty");
+const { Admin } = require("../models/admin");
+
 require("dotenv").config();
 
-const userAuth = async (req, res, next) => {
+// 🔹 Middleware for Student Authentication
+const studentAuth = async (req, res, next) => {
   try {
-    const cookie = req.cookies;
-    const token = cookie.token;
-    //validating the token
-    if (!token) {
-      return res.status(401).send("Unautorized");
-    }
-    //extracting the payload
-    const payload = await jwt.verify(token, process.env.JWT_SECRET);
-    if (!payload) {
-      throw new Error("Invalid token");
-    }
-    const { _id } = payload;
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-    //getting the details of the user
-    const user = await User.findById({ _id });
-    if (!user) {
-      throw new Error("Invalid User");
-    }
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload) throw new Error("Invalid token");
+
+    const user = await User.findById(payload._id);
+    if (!user) throw new Error("User not found");
+
     req.user = user;
     next();
-  } catch (e) {
-    return res.status(400).send("ERROR: " + e.message);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
-const facultyAuth = async (req, res) => {
+// 🔹 Middleware for Faculty Authentication
+const facultyAuth = async (req, res, next) => {
   try {
-    const cookie = req.cookies;
-    const token = cookie.token;
-    //validating the token
-    if (!token) {
-      return res.status(401).send("Unautorized");
-    }
-    //extracting the payload
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
     const payload = jwt.verify(token, process.env.JWT_SECRET);
-    if (!payload) {
-      throw new Error("Invalid token");
-    }
-    const { _id } = payload;
-    const faculty = await Faculty.findById({ _id });
-    if (!faculty) {
-      throw new Error("Invalid User");
-    }
+    if (!payload) throw new Error("Invalid token");
+
+    const faculty = await Faculty.findById(payload._id);
+    if (!faculty) throw new Error("Faculty not found");
+
     req.faculty = faculty;
     next();
-  } catch (e) {
-    return res.status(400).send("ERROR: " + e.message);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
-module.exports = { userAuth, facultyAuth };
+
+// 🔹 Middleware for Admin Authentication
+const adminAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload) throw new Error("Invalid token");
+
+    const admin = await Admin.findById(payload._id);
+    if (!admin) throw new Error("Admin not found");
+
+    req.admin = admin;
+    next();
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+module.exports = { studentAuth, facultyAuth, adminAuth };

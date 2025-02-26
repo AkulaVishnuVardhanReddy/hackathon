@@ -1,6 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
-const { userAuth } = require("../middlewares/auth");
+const { studentAuth } = require("../middlewares/auth");
 const {
   validateProfileEditData,
   validatePasswordChangeData,
@@ -8,7 +8,7 @@ const {
 
 const profileRouter = express.Router();
 
-profileRouter.get("/profile/view", userAuth, async (req, res) => {
+profileRouter.get("/profile/view", studentAuth, async (req, res) => {
   try {
     const { user } = req;
     res.send(user);
@@ -16,6 +16,5 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     res.status(400).send("Error:  " + err.message);
   }
 });
-
 
 module.exports = profileRouter;

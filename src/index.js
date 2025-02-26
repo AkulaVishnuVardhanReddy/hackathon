@@ -25,8 +25,10 @@ app.use(passport.session());
 
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
+const clubRouter = require("./routes/club");
 app.use("/", authRouter);
 app.use("/", profileRouter);
+app.use("/", clubRouter);
 
 connectDb()
   .then(() => {

@@ -25,7 +25,7 @@ authRouter.get(
 authRouter.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: "/student/login",
     session: true,
   }),
   async (req, res) => {
@@ -189,24 +189,24 @@ authRouter.post("/admin/login", async (req, res) => {
     res.status(400).send("ERROR: " + err.message);
   }
 });
-authRouter.post("/admin/register", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
-      throw new Error("Email already in use");
-    }
-    const passwordHash = await bcrypt.hash(password, 10);
-    const admin = new Admin({
-      email,
-      password: passwordHash,
-    });
-    await admin.save();
-    res.json({ message: "Admin registered successfully" });
-  } catch (err) {
-    res.status(400).send(err.message);
-  }
-});
+// authRouter.post("/admin/register", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     const existingAdmin = await Admin.findOne({ email });
+//     if (existingAdmin) {
+//       throw new Error("Email already in use");
+//     }
+//     const passwordHash = await bcrypt.hash(password, 10);
+//     const admin = new Admin({
+//       email,
+//       password: passwordHash,
+//     });
+//     await admin.save();
+//     res.json({ message: "Admin registered successfully" });
+//   } catch (err) {
+//     res.status(400).send(err.message);
+//   }
+// });
 //logout route
 authRouter.post("/logout", async (req, res) => {
   res.cookie("token", null, { expires: new Date(Date.now()) });
