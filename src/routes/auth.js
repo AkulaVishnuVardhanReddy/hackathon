@@ -10,6 +10,38 @@ const {
 
 const authRouter = express.Router();
 authRouter.use(cookieParser());
+
+const passport = require("passport");
+
+// Start Google Auth
+authRouter.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Google Callback
+authRouter.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: true,
+  }),
+  async (req, res) => {
+    const token = await req.user.getJWT();
+    res.cookie("token", token, { expires: new Date(Date.now() + 900000) });
+
+    res.redirect(`${process.env.FRONTEND_URL}/profile`);
+  }
+);
+
+// Logout
+authRouter.get("/logout", (req, res) => {
+  req.logout(() => {
+    res.cookie("token", null, { expires: new Date(Date.now()) });
+    res.send("Successfully logged out");
+  });
+});
+
 //create a new user
 authRouter.post("/signup", async (req, res) => {
   try {

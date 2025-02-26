@@ -9,8 +9,7 @@ const userSchema = new mongoose.Schema(
     firstName: {
       type: String,
       required: true,
-      minlength: 3,
-      maxlength: 40,
+
       validate: {
         validator: function (v) {
           return /^[A-Za-z]+$/.test(v);
@@ -21,8 +20,7 @@ const userSchema = new mongoose.Schema(
     lastName: {
       type: String,
       required: true,
-      minlength: 3,
-      maxlength: 80,
+
       validate: {
         validator: function (v) {
           return /^[A-Za-z]+$/.test(v);
@@ -45,11 +43,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      validate(value) {
-        if (!validator.isStrongPassword(value)) {
-          throw new Error("Password is not strong enough");
-        }
-      },
+      
     },
     age: {
       type: Number,
