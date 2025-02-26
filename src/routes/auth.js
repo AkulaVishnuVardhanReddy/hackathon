@@ -1,5 +1,6 @@
 const express = require("express");
 const { User } = require("../models/user");
+const { sendOTP } = require("../utils/mailer");
 const cookieParser = require("cookie-parser");
 
 const bcrypt = require("bcrypt");
@@ -43,20 +44,58 @@ authRouter.get("/logout", (req, res) => {
 });
 
 //create a new user
+const generateOTP = () =>
+  Math.floor(100000 + Math.random() * 900000).toString();
+
 authRouter.post("/signup", async (req, res) => {
   try {
-    validateSignupData(req);
     const { firstName, lastName, email, password } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new Error("Email already in use");
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
+
     const user = new User({
       firstName,
       lastName,
       email,
       password: passwordHash,
+      otp,
+      otpExpiry,
     });
 
     await user.save();
-    res.json(user);
+    await sendOTP(email, otp);
+
+    res.json({ message: "OTP sent to email", email });
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+});
+authRouter.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.otp !== otp || user.otpExpiry < Date.now()) {
+      throw new Error("Invalid or expired OTP");
+    }
+
+    user.isVerified = true;
+    user.otp = undefined; // Remove OTP after verification
+    user.otpExpiry = undefined;
+    await user.save();
+
+    res.json({ message: "Email verified successfully" });
   } catch (err) {
     res.status(400).send(err.message);
   }

@@ -29,7 +29,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      
     },
     age: {
       type: Number,
@@ -58,6 +57,16 @@ const userSchema = new mongoose.Schema(
     skills: {
       type: [String],
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+    },
+    otpExpiry: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -65,22 +74,13 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.getJWT = async function () {
-  const user = this;
-  const token = await jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
-  return token;
 };
 
 userSchema.methods.isValidPassword = async function (passwordEnteredByUser) {
-  const user = this;
-  const hashedPassword = user.password;
-
-  const isvalidPassword = await bcrypt.compare(
-    passwordEnteredByUser,
-    hashedPassword
-  );
-  return isvalidPassword;
+  return bcrypt.compare(passwordEnteredByUser, this.password);
 };
 
 const User = mongoose.model("User", userSchema);
