@@ -33,7 +33,7 @@ authRouter.get(
     const token = await req.user.getJWT();
     res.cookie("token", token, { expires: new Date(Date.now() + 900000) });
 
-    res.redirect(`${process.env.FRONTEND_URL}/profile`);
+    res.redirect(`${process.env.FRONTEND_URL}/student`);
   }
 );
 
