@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema({
   eventName: { type: String, required: true },
-  date: { type: Date, required: true },
+  date: { type: Date, default: Date.now },
   aboutEvent: { type: String },
   conductedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Club" },
   participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
