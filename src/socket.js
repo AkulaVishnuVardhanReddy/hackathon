@@ -3,7 +3,7 @@ const { Server } = require("socket.io");
 module.exports = (server) => {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173", // Allow frontend access
+      origin: ["https://campusphere1.netlify.app", "http://localhost:5173"], // Allow frontend access
       credentials: true,
     },
   });

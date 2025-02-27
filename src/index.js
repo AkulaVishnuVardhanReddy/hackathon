@@ -10,7 +10,12 @@ require("./config/passport");
 app.use(express.json());
 app.use(cookieParser());
 const cors = require("cors");
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: ["https://campusphere1.netlify.app", "http://localhost:5173"],
+    credentials: true,
+  })
+);
 
 // Session setup
 app.use(
